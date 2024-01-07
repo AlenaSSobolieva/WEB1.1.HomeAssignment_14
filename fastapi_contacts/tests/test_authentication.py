@@ -2,14 +2,15 @@
 
 import unittest
 from fastapi.testclient import TestClient
-from fastapi_contacts.main import app
+import fastapi_contacts.main
 from fastapi_contacts.app.models import User
 from fastapi_contacts.app.database import SessionLocal
+
 
 class TestAuthentication(unittest.TestCase):
 
     def setUp(self):
-        self.client = TestClient(app)
+        self.client = TestClient(fastapi_contacts.main.app)
         self.test_user = {"email": "test@example.com", "password": "testpassword"}
 
     def tearDown(self):

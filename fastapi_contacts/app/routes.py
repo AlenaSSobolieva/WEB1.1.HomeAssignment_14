@@ -3,10 +3,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session
 from cloudinary.uploader import upload
-import crud, database, schemas, utilities, dependencies
+from fastapi_contacts.app import crud, database, schemas, utilities, dependencies
 
 router = APIRouter()
-
 
 @router.post("/register", response_model=schemas.UserResponse)
 async def register_user(
@@ -15,6 +14,18 @@ async def register_user(
         db: Session = Depends(database.get_db),
         current_user: str = Depends(dependencies.get_current_user_rate_limited),
 ):
+    """
+    Register a new user.
+
+    Parameters:
+    - `user` (schemas.UserCreate): User registration information.
+    - `avatar` (UploadFile, optional): Avatar image file for the user (if provided).
+    - `db` (Session): Database session dependency.
+    - `current_user` (str): Current user obtained from the OAuth2 token.
+
+    Returns:
+    - `schemas.UserResponse`: Response model containing user information.
+    """
     existing_user = crud.get_user_by_email(db, email=user.email)
     if existing_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already registered with this email")
@@ -34,13 +45,23 @@ async def register_user(
 
     return response_model
 
-
 @router.get("/verify-email/{user_id}", response_model=schemas.Message)
 async def verify_email(
         user_id: int,
         db: Session = Depends(database.get_db),
         current_user: str = Depends(dependencies.get_current_user_rate_limited),
 ):
+    """
+    Verify the email of a user.
+
+    Parameters:
+    - `user_id` (int): User ID to verify.
+    - `db` (Session): Database session dependency.
+    - `current_user` (str): Current user obtained from the OAuth2 token.
+
+    Returns:
+    - `schemas.Message`: Response model indicating the result of email verification.
+    """
     user = crud.get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

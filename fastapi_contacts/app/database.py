@@ -10,15 +10,34 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Function to get a database session
 def get_db():
+    """
+    Function to get a database session.
+
+    Usage:
+    ```
+    with get_db() as db:
+        # Perform database operations
+    ```
+
+    :return: Database session.
+    """
     db = SessionLocal()
     try:
-        yield db
+        return db
     finally:
         db.close()
 
-# Function to create tables
-def create_tables():
-    Base.metadata.create_all(bind=engine)
 
+def create_tables():
+    """
+    Function to create database tables.
+
+    Usage:
+    ```
+    create_tables()
+    ```
+
+    This function should be called to create tables before running the application.
+    """
+    Base.metadata.create_all(bind=engine)

@@ -1,0 +1,23 @@
+# fastapi_contacts/
+# ├── main.py
+# ├── .env
+# ├── app/
+# │   ├── __init__.py
+# │   ├── models.py
+# │   ├── crud.py
+# │   ├── authentication.py
+# │   ├── database.py
+# │   ├── dependencies.py
+# │   ├── schemas.py
+# │   ├── security.py
+# │   ├── routes.py
+# │   └── utilities.py
+# └── tests/
+#     ├── __init__.py
+#     ├── test_authentication.py
+#     ├── test_contacts.py
+#     ├── test_utilities.py
+#     └── integration/
+#         ├── __init__.py
+#         ├── test_integration_auth.py
+#         └── test_integration_contacts.py

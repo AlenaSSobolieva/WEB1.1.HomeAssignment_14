@@ -1,5 +1,3 @@
-# utilities.py
-
 # fastapi_contacts/app/utilities.py
 
 import smtplib
@@ -10,12 +8,23 @@ import os
 
 load_dotenv()
 
-def send_email_verification(email: str, user_id: int):
-    sender_email = os.getenv("EMAIL_SENDER")  # Replace with your email
-    sender_password = os.getenv("EMAIL_PASSWORD")  # Replace with your email password
-    smtp_server = os.getenv("SMTP_SERVER")  # Replace with your SMTP server
-    smtp_port = os.getenv("SMTP_PORT")  # Replace with your SMTP port
+class CustomSMTP_SSL(smtplib.SMTP_SSL):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
+def send_email_verification(smtp: CustomSMTP_SSL, email: str, user_id: int):
+    """
+    Send an email verification link to the specified email address.
+
+    Parameters:
+    - `smtp` (CustomSMTP_SSL): An instantiated CustomSMTP_SSL object.
+    - `email` (str): Email address to send the verification link to.
+    - `user_id` (int): User ID to include in the verification link.
+
+    Returns:
+    - None
+    """
+    sender_email = os.getenv("EMAIL_SENDER")  # Replace with your email
     subject = "Email Verification"
     body = f"Click the link to verify your email: http://your-app-url/verify-email/{user_id}"
 
@@ -26,16 +35,9 @@ def send_email_verification(email: str, user_id: int):
     message.attach(MIMEText(body, "plain"))
 
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, email, message.as_string())
+        smtp.connect(os.getenv("SMTP_SERVER"), os.getenv("SMTP_PORT"))  # Use your SMTP server and port
+        smtp.login(sender_email, os.getenv("EMAIL_PASSWORD"))
+        smtp.sendmail(sender_email, email, message.as_string())
         print("Email verification link sent successfully.")
     except Exception as e:
         print(f"Error sending email: {e}")
-
-# Add your email server details to the .env file
-# EMAIL_SENDER=your-email@example.com
-# EMAIL_PASSWORD=your-email-password
-# SMTP_SERVER=your-smtp-server
-# SMTP_PORT=your-smtp-port
